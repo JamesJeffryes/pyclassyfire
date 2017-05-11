@@ -3,8 +3,13 @@ chemical database files"""
 
 import requests
 import csv
+import time
+import os
+import json
 
 url = "http://classyfire.wishartlab.com"
+chunk_size = 1000
+sleep_interval = 60
 
 
 def structure_query(compound, label='pyclassyfire'):
@@ -39,11 +44,11 @@ def get_results(query_id, return_format="json"):
     r = requests.get('%s/queries/%s.%s' % (url, query_id, return_format),
                      headers={"Content-Type": "application/%s" % return_format})
     r.raise_for_status()
-    print(repr(r.text))
     return r.text
 
 
-def tabular_query(inpath, structure_key, dialect='excel', outpath=None):
+def tabular_query(inpath, structure_key, dialect='excel', outpath=None,
+                  outfields=('taxonomy', 'description', 'substituents')):
     """Given a path to a compound set in tabular form (comma or tab delimited)
     annotate all compounds and write results to an expanded table.
     
@@ -60,7 +65,46 @@ def tabular_query(inpath, structure_key, dialect='excel', outpath=None):
     :return: 
     :rtype: 
     """
-    raise NotImplementedError
+    tax_fields = ('kingdom', 'superclass', 'class', 'subclass')
+    query_ids = []
+    infile = open(inpath)
+    if not outpath:
+        outpath = _prevent_overwrite(inpath)
+    comps = []
+    for line in csv.DictReader(infile, dialect=dialect):
+        comps.append(line[structure_key])
+        if not len(comps) % chunk_size:
+            query_ids.append(structure_query('/n'.join(comps)))
+            comps = []
+    if comps:
+        query_ids.append(structure_query('\\n'.join(comps)))
+    print('%s queries submitted to ClassyFire API' % len(query_ids))
+    i = 0
+    infile.seek(0)
+    with open(outpath, 'w') as outfile:
+        reader = csv.DictReader(infile, dialect=dialect)
+        writer = csv.DictWriter(outfile, reader.fieldnames+list(outfields),
+                                dialect=dialect)
+        writer.writeheader()
+        while i < len(query_ids):
+            result = json.loads(get_results(query_ids[i]))
+            if result["classification_status"] == "Done":
+                for hit, line in zip(result['entities'], reader):
+                    if 'taxonomy' in outfields:
+                        hit['taxonomy'] = ";".join(
+                            ['%s:%s' % (hit[x]['name'], hit[x]['chemont_id'])
+                             for x in tax_fields if hit[x]])
+                    for field in outfields:
+                        if isinstance(hit[field], list):
+                            line[field] = ';'.join(hit[field])
+                        else:
+                            line[field] = hit[field]
+                    writer.writerow(line)
+                i += 1
+            else:
+                print("%s percent complete" % round(i/len(query_ids)*100))
+                time.sleep(sleep_interval)
+    infile.close()
 
 
 def sdf_query(inpath, outpath=None):
@@ -75,3 +119,21 @@ def sdf_query(inpath, outpath=None):
     :rtype: 
     """
     raise NotImplementedError
+
+
+def _prevent_overwrite(write_path, suffix='_annotated'):
+    """Prevents overwrite of existing output files by appending a suffix when needed
+
+    :param write_path: potential write path
+    :type write_path: string
+    :return:
+    :rtype:
+    """
+    while os.path.exists(write_path):
+        sp = write_path.split('.')
+        if len(sp) > 1:
+            sp[-2] += suffix
+            write_path = '.'.join(sp)
+        else:
+            write_path += suffix
+    return write_path
