@@ -19,13 +19,33 @@ def structure_query(compound, label='pyclassyfire'):
     :param compound: The compound structures as line delimited inchikey or smiles.
     Optionally a tab-separated id may be prepended for each structure.
     :type compound: str
-    :param label: A label for 
+    :param label: A label for the query
     :type label:
     :return: A query ID number
     :rtype: int
     """
     r = requests.post(url + '/queries.json', data='{"label": "%s", '
                       '"query_input": "%s", "query_type": "STRUCTURE"}'
+                                                  % (label, compound),
+                      headers={"Content-Type": "application/json"})
+    r.raise_for_status()
+    return r.json()['id']
+
+
+def iupac_query(compound, label='pyclassyfire'):
+    """Submit a IUPAC compound name to the ClassyFire service for evaluation 
+    and receive a id which can be used to used to collect results
+
+    :param compound: The line delimited compound names. Optionally a 
+    tab-separated id may be prepended for each compound.
+    :type compound: str
+    :param label: A label for the query
+    :type label:
+    :return: A query ID number
+    :rtype: int
+    """
+    r = requests.post(url + '/queries.json', data='{"label": "%s", '
+                      '"query_input": "%s", "query_type": "IUPAC_NAME"}'
                                                   % (label, compound),
                       headers={"Content-Type": "application/json"})
     r.raise_for_status()
@@ -59,11 +79,26 @@ def get_entity(inchikey, return_format="json"):
     :return: query information
     :rtype: str
     """
+    inchikey = inchikey.replace('InChIKey=', '')
     r = requests.get('%s/entities/%s.%s' % (url, inchikey, return_format),
                      headers={
                          "Content-Type": "application/%s" % return_format})
     r.raise_for_status()
-    print(repr(r.text))
+    return r.text
+
+
+def get_chemont_node(chemontid):
+    """Return data for the TaxNode with ID chemontid.
+    
+    :param chemontid: the ChemOnt ID of the entity.
+    :type chemontid: str
+    :return: The classification results for the entity as json. 
+    :rtype: str
+    """
+    chemontid = chemontid.replace("CHEMONTID:", "C")
+    r = requests.get('%s/tax_nodes/%s.json' % (url, chemontid),
+                     headers={"Content-Type": "application/json" })
+    r.raise_for_status()
     return r.text
 
 
@@ -82,6 +117,8 @@ def tabular_query(inpath, structure_key, dialect='excel', outpath=None,
     :type dialect: str
     :param outpath: Path to desired output location
     :type outpath: str
+    :param outfields: Fields to append to table from ClassyFire output
+    :type outfields: tuple(string)
     :return: 
     :rtype: 
     """
