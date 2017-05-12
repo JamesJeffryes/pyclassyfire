@@ -1,5 +1,5 @@
 ### pyclassyfire
 
-This package provides a set of helper functions in pythong for 
+This package provides a set of helper functions in python for 
 annotating chemical structures with the chemical ontology developed by 
 Djoumbou et. al using the ClassyFire API
