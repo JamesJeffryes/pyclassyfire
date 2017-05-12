@@ -18,8 +18,9 @@ def structure_query(compound, label='pyclassyfire'):
     
     :param compound: The compound structures as line delimited inchikey or smiles.
     Optionally a tab-separated id may be prepended for each structure.
-    
     :type compound: str
+    :param label: A label for 
+    :type label:
     :return: A query ID number
     :rtype: int
     """
@@ -44,6 +45,25 @@ def get_results(query_id, return_format="json"):
     r = requests.get('%s/queries/%s.%s' % (url, query_id, return_format),
                      headers={"Content-Type": "application/%s" % return_format})
     r.raise_for_status()
+    return r.text
+
+
+def get_entity(inchikey, return_format="json"):
+    """Given a InChIKey for a previously queried structure, fetch the 
+    classification results.
+
+    :param inchikey: An InChIKey for a previously calculated chemical structure
+    :type inchikey: str
+    :param return_format: desired return format. valid types are json, csv or sdf
+    :type return_format: str
+    :return: query information
+    :rtype: str
+    """
+    r = requests.get('%s/entities/%s.%s' % (url, inchikey, return_format),
+                     headers={
+                         "Content-Type": "application/%s" % return_format})
+    r.raise_for_status()
+    print(repr(r.text))
     return r.text
 
 
