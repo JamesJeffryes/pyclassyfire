@@ -124,7 +124,7 @@ def tabular_query(inpath, structure_key, dialect='excel', outpath=None,
     """
     tax_fields = ('kingdom', 'superclass', 'class', 'subclass')
     query_ids = []
-    infile = open(inpath)
+    infile = open(inpath, 'rU')
     if not outpath:
         outpath = _prevent_overwrite(inpath)
     comps = []
