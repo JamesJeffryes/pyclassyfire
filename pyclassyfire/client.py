@@ -1,5 +1,5 @@
-"""A client for the ClassyFire API which enables efficient querying with 
-chemical database files"""
+"""A client for the ClassyFire API which enables efficient querying with
+ chemical database files"""
 
 import requests
 import csv
@@ -16,9 +16,9 @@ def structure_query(compound, label='pyclassyfire'):
     """Submit a compound information to the ClassyFire service for evaluation 
     and receive a id which can be used to used to collect results
     
-    :param compound: The compound structures as line delimited inchikey or 
-        smiles. Optionally a tab-separated id may be prepended for each 
-        structure.
+    :param compound: The compound structures as line delimited inchikey or
+         smiles. Optionally a tab-separated id may be prepended for each
+         structure.
     :type compound: str
     :param label: A label for the query
     :type label:
@@ -38,11 +38,11 @@ def structure_query(compound, label='pyclassyfire'):
 
 
 def iupac_query(compound, label='pyclassyfire'):
-    """Submit a IUPAC compound name to the ClassyFire service for evaluation 
-    and receive a id which can be used to used to collect results
-
-    :param compound: The line delimited compound names. Optionally a 
-        tab-separated id may be prepended for each compound.
+    """Submit a IUPAC compound name to the ClassyFire service for evaluation
+     and receive a id which can be used to used to collect results.
+    
+    :param compound: The line delimited compound names. Optionally a
+         tab-separated id may be prepended for each compound.
     :type compound: str
     :param label: A label for the query
     :type label:
@@ -83,8 +83,8 @@ def get_results(query_id, return_format="json"):
 
 
 def get_entity(inchikey, return_format="json"):
-    """Given a InChIKey for a previously queried structure, fetch the 
-    classification results.
+    """Given a InChIKey for a previously queried structure, fetch the
+     classification results.
 
     :param inchikey: An InChIKey for a previously calculated chemical structure
     :type inchikey: str
@@ -111,7 +111,7 @@ def get_chemont_node(chemontid):
     
     :param chemontid: the ChemOnt ID of the entity.
     :type chemontid: str
-    :return: The classification results for the entity as json. 
+    :return: The classification results for the entity as json.
     :rtype: str
     
     >>> get_chemont_node('CHEMONTID:0004253')
@@ -127,15 +127,15 @@ def get_chemont_node(chemontid):
 def tabular_query(inpath, structure_key, dialect='excel', outpath=None,
                   outfields=('taxonomy', 'description', 'substituents')):
     """Given a path to a compound set in tabular form (comma or tab delimited)
-    annotate all compounds and write results to an expanded table.
+     annotate all compounds and write results to an expanded table.
     
     :param inpath: path to compound file to be annotated
     :type inpath: str
-    :param structure_key: column heading which contains the compounds InChIKey 
-        or SMILES
+    :param structure_key: column heading which contains the compounds InChIKey
+         or SMILES
     :type structure_key: str
-    :param dialect: dialect for parsing table (generally 'excel' for csv, 
-        'excel-tab' for tsv)
+    :param dialect: dialect for parsing table (generally 'excel' for csv,
+         'excel-tab' for tsv)
     :type dialect: str
     :param outpath: Path to desired output location
     :type outpath: str
@@ -188,8 +188,8 @@ def tabular_query(inpath, structure_key, dialect='excel', outpath=None,
 
 
 def sdf_query(inpath, outpath=None):
-    """Given a path to a compound set in a sdf file, annotate all compounds 
-    and write results as attributes in a sdf file.
+    """Given a path to a compound set in a sdf file, annotate all compounds
+     and write results as attributes in a sdf file.
     
     :param inpath: path to compound file to be annotated
     :type inpath: str
@@ -226,7 +226,8 @@ def sdf_query(inpath, outpath=None):
 
 
 def _prevent_overwrite(write_path, suffix='_annotated'):
-    """Prevents overwrite of existing output files by appending a suffix when needed
+    """Prevents overwrite of existing output files by appending a suffix when
+     needed
 
     :param write_path: potential write path
     :type write_path: string

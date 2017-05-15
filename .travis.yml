@@ -14,4 +14,6 @@ install:
   - conda create -q -y  -c rdkit -n test-environment python=$TRAVIS_PYTHON_VERSION rdkit nose
   - source activate test-environment
   - python setup.py install
-script: nosetests pyclassyfire
+  - pip install python-coveralls
+script: nosetests --with-coverage --cover-xml --cover-package=pyclassyfire pyclassyfire
+after sucess: COVERALLS_REPO_TOKEN=NsCAJ0qiT3l04Dl1R8rahqU7KlaNbGfMJ coveralls
