@@ -175,7 +175,30 @@ def sdf_query(inpath, outpath=None):
     :return: 
     :rtype: 
     """
-    raise NotImplementedError
+    from rdkit.Chem import AllChem
+    query_ids = []
+    if not outpath:
+        outpath = _prevent_overwrite(inpath)
+    comps = []
+    for mol in AllChem.SDMolSupplier(inpath):
+        if mol:
+            comps.append(AllChem.MolToSmiles(mol))
+        if not len(comps) % chunk_size:
+            query_ids.append(structure_query('/n'.join(comps)))
+            comps = []
+    if comps:
+        query_ids.append(structure_query('\\n'.join(comps)))
+    print('%s queries submitted to ClassyFire API' % len(query_ids))
+    i = 0
+    with open(outpath, 'w') as outfile:
+        while i < len(query_ids):
+            result = json.loads(get_results(query_ids[i]))
+            if result["classification_status"] == "Done":
+                outfile.write(get_results(query_ids[i], return_format='sdf'))
+                i += 1
+            else:
+                print("%s percent complete" % round(i / len(query_ids) * 100))
+                time.sleep(sleep_interval)
 
 
 def _prevent_overwrite(write_path, suffix='_annotated'):
