@@ -57,13 +57,18 @@
     <span class="sd">&quot;&quot;&quot;Submit a compound information to the ClassyFire service for evaluation </span>
 <span class="sd">    and receive a id which can be used to used to collect results</span>
 <span class="sd">    </span>
-<span class="sd">    :param compound: The compound structures as line delimited inchikey or smiles.</span>
-<span class="sd">    Optionally a tab-separated id may be prepended for each structure.</span>
+<span class="sd">    :param compound: The compound structures as line delimited inchikey or </span>
+<span class="sd">        smiles. Optionally a tab-separated id may be prepended for each </span>
+<span class="sd">        structure.</span>
 <span class="sd">    :type compound: str</span>
 <span class="sd">    :param label: A label for the query</span>
 <span class="sd">    :type label:</span>
 <span class="sd">    :return: A query ID number</span>
 <span class="sd">    :rtype: int</span>
+<span class="sd">    </span>
+<span class="sd">    &gt;&gt;&gt; structure_query(&#39;CCC&#39;, &#39;smiles_test&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; structure_query(&#39;InChI=1S/C3H4O3/c1-2(4)3(5)6/h1H3,(H,5,6)&#39;)</span>
+<span class="sd">    </span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">url</span> <span class="o">+</span> <span class="s1">&#39;/queries.json&#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="s1">&#39;{&quot;label&quot;: &quot;</span><span class="si">%s</span><span class="s1">&quot;, &#39;</span>
                       <span class="s1">&#39;&quot;query_input&quot;: &quot;</span><span class="si">%s</span><span class="s1">&quot;, &quot;query_type&quot;: &quot;STRUCTURE&quot;}&#39;</span>
@@ -78,12 +83,16 @@
 <span class="sd">    and receive a id which can be used to used to collect results</span>
 
 <span class="sd">    :param compound: The line delimited compound names. Optionally a </span>
-<span class="sd">    tab-separated id may be prepended for each compound.</span>
+<span class="sd">        tab-separated id may be prepended for each compound.</span>
 <span class="sd">    :type compound: str</span>
 <span class="sd">    :param label: A label for the query</span>
 <span class="sd">    :type label:</span>
 <span class="sd">    :return: A query ID number</span>
 <span class="sd">    :rtype: int</span>
+<span class="sd">    </span>
+<span class="sd">    &gt;&gt;&gt; iupac_query(&#39;ethane&#39;, &#39;iupac_test&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; iupac_query(&#39;C001\\tethane\\nC002\\tethanol&#39;, &#39;iupac_test&#39;)</span>
+<span class="sd">    </span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">url</span> <span class="o">+</span> <span class="s1">&#39;/queries.json&#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="s1">&#39;{&quot;label&quot;: &quot;</span><span class="si">%s</span><span class="s1">&quot;, &#39;</span>
                       <span class="s1">&#39;&quot;query_input&quot;: &quot;</span><span class="si">%s</span><span class="s1">&quot;, &quot;query_type&quot;: &quot;IUPAC_NAME&quot;}&#39;</span>
@@ -102,6 +111,11 @@
 <span class="sd">    :type return_format: str</span>
 <span class="sd">    :return: query information</span>
 <span class="sd">    :rtype: str</span>
+<span class="sd">    </span>
+<span class="sd">    &gt;&gt;&gt; get_results(&#39;595535&#39;, &#39;csv&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; get_results(&#39;595535&#39;, &#39;json&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; get_results(&#39;595535&#39;, &#39;sdf&#39;)</span>
+<span class="sd">    </span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1">/queries/</span><span class="si">%s</span><span class="s1">.</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">query_id</span><span class="p">,</span> <span class="n">return_format</span><span class="p">),</span>
                      <span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;Content-Type&quot;</span><span class="p">:</span> <span class="s2">&quot;application/</span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">return_format</span><span class="p">})</span>
@@ -119,6 +133,11 @@
 <span class="sd">    :type return_format: str</span>
 <span class="sd">    :return: query information</span>
 <span class="sd">    :rtype: str</span>
+<span class="sd">    </span>
+<span class="sd">    &gt;&gt;&gt; get_entity(&quot;ATUOYWHBWRKTHZ-UHFFFAOYSA-N&quot;, &#39;csv&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; get_entity(&quot;ATUOYWHBWRKTHZ-UHFFFAOYSA-N&quot;, &#39;json&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; get_entity(&quot;ATUOYWHBWRKTHZ-UHFFFAOYSA-N&quot;, &#39;sdf&#39;)</span>
+<span class="sd">    </span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">inchikey</span> <span class="o">=</span> <span class="n">inchikey</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;InChIKey=&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
     <span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1">/entities/</span><span class="si">%s</span><span class="s1">.</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">inchikey</span><span class="p">,</span> <span class="n">return_format</span><span class="p">),</span>
@@ -135,6 +154,9 @@
 <span class="sd">    :type chemontid: str</span>
 <span class="sd">    :return: The classification results for the entity as json. </span>
 <span class="sd">    :rtype: str</span>
+<span class="sd">    </span>
+<span class="sd">    &gt;&gt;&gt; get_chemont_node(&#39;CHEMONTID:0004253&#39;)</span>
+<span class="sd">    </span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">chemontid</span> <span class="o">=</span> <span class="n">chemontid</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;CHEMONTID:&quot;</span><span class="p">,</span> <span class="s2">&quot;C&quot;</span><span class="p">)</span>
     <span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1">/tax_nodes/</span><span class="si">%s</span><span class="s1">.json&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">chemontid</span><span class="p">),</span>
@@ -151,17 +173,18 @@
 <span class="sd">    :param inpath: path to compound file to be annotated</span>
 <span class="sd">    :type inpath: str</span>
 <span class="sd">    :param structure_key: column heading which contains the compounds InChIKey </span>
-<span class="sd">    or SMILES</span>
+<span class="sd">        or SMILES</span>
 <span class="sd">    :type structure_key: str</span>
 <span class="sd">    :param dialect: dialect for parsing table (generally &#39;excel&#39; for csv, </span>
-<span class="sd">    &#39;excel-tab&#39; for tsv)</span>
+<span class="sd">        &#39;excel-tab&#39; for tsv)</span>
 <span class="sd">    :type dialect: str</span>
 <span class="sd">    :param outpath: Path to desired output location</span>
 <span class="sd">    :type outpath: str</span>
 <span class="sd">    :param outfields: Fields to append to table from ClassyFire output</span>
 <span class="sd">    :type outfields: tuple(string)</span>
-<span class="sd">    :return: </span>
-<span class="sd">    :rtype: </span>
+<span class="sd">    </span>
+<span class="sd">    &gt;&gt;&gt; tabular_query(&#39;/tabulated_data.tsv&#39;, &#39;structure&#39;, &#39;excel-tab&#39;)</span>
+<span class="sd">    </span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">tax_fields</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;kingdom&#39;</span><span class="p">,</span> <span class="s1">&#39;superclass&#39;</span><span class="p">,</span> <span class="s1">&#39;class&#39;</span><span class="p">,</span> <span class="s1">&#39;subclass&#39;</span><span class="p">)</span>
     <span class="n">query_ids</span> <span class="o">=</span> <span class="p">[]</span>
@@ -213,8 +236,9 @@
 <span class="sd">    :type inpath: str</span>
 <span class="sd">    :param outpath: Path to desired output location</span>
 <span class="sd">    :type outpath: str</span>
-<span class="sd">    :return: </span>
-<span class="sd">    :rtype: </span>
+
+<span class="sd">    &gt;&gt;&gt; sdf_query(&#39;/sdf_data.sdf&#39;)</span>
+<span class="sd">    </span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="kn">from</span> <span class="nn">rdkit.Chem</span> <span class="k">import</span> <span class="n">AllChem</span>
     <span class="n">query_ids</span> <span class="o">=</span> <span class="p">[]</span>

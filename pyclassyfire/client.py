@@ -16,13 +16,18 @@ def structure_query(compound, label='pyclassyfire'):
     """Submit a compound information to the ClassyFire service for evaluation 
     and receive a id which can be used to used to collect results
     
-    :param compound: The compound structures as line delimited inchikey or smiles.
-    Optionally a tab-separated id may be prepended for each structure.
+    :param compound: The compound structures as line delimited inchikey or 
+        smiles. Optionally a tab-separated id may be prepended for each 
+        structure.
     :type compound: str
     :param label: A label for the query
     :type label:
     :return: A query ID number
     :rtype: int
+    
+    >>> structure_query('CCC', 'smiles_test')
+    >>> structure_query('InChI=1S/C3H4O3/c1-2(4)3(5)6/h1H3,(H,5,6)')
+    
     """
     r = requests.post(url + '/queries.json', data='{"label": "%s", '
                       '"query_input": "%s", "query_type": "STRUCTURE"}'
@@ -37,12 +42,16 @@ def iupac_query(compound, label='pyclassyfire'):
     and receive a id which can be used to used to collect results
 
     :param compound: The line delimited compound names. Optionally a 
-    tab-separated id may be prepended for each compound.
+        tab-separated id may be prepended for each compound.
     :type compound: str
     :param label: A label for the query
     :type label:
     :return: A query ID number
     :rtype: int
+    
+    >>> iupac_query('ethane', 'iupac_test')
+    >>> iupac_query('C001\\tethane\\nC002\\tethanol', 'iupac_test')
+    
     """
     r = requests.post(url + '/queries.json', data='{"label": "%s", '
                       '"query_input": "%s", "query_type": "IUPAC_NAME"}'
@@ -61,6 +70,11 @@ def get_results(query_id, return_format="json"):
     :type return_format: str
     :return: query information
     :rtype: str
+    
+    >>> get_results('595535', 'csv')
+    >>> get_results('595535', 'json')
+    >>> get_results('595535', 'sdf')
+    
     """
     r = requests.get('%s/queries/%s.%s' % (url, query_id, return_format),
                      headers={"Content-Type": "application/%s" % return_format})
@@ -78,6 +92,11 @@ def get_entity(inchikey, return_format="json"):
     :type return_format: str
     :return: query information
     :rtype: str
+    
+    >>> get_entity("ATUOYWHBWRKTHZ-UHFFFAOYSA-N", 'csv')
+    >>> get_entity("ATUOYWHBWRKTHZ-UHFFFAOYSA-N", 'json')
+    >>> get_entity("ATUOYWHBWRKTHZ-UHFFFAOYSA-N", 'sdf')
+    
     """
     inchikey = inchikey.replace('InChIKey=', '')
     r = requests.get('%s/entities/%s.%s' % (url, inchikey, return_format),
@@ -94,6 +113,9 @@ def get_chemont_node(chemontid):
     :type chemontid: str
     :return: The classification results for the entity as json. 
     :rtype: str
+    
+    >>> get_chemont_node('CHEMONTID:0004253')
+    
     """
     chemontid = chemontid.replace("CHEMONTID:", "C")
     r = requests.get('%s/tax_nodes/%s.json' % (url, chemontid),
@@ -110,17 +132,18 @@ def tabular_query(inpath, structure_key, dialect='excel', outpath=None,
     :param inpath: path to compound file to be annotated
     :type inpath: str
     :param structure_key: column heading which contains the compounds InChIKey 
-    or SMILES
+        or SMILES
     :type structure_key: str
     :param dialect: dialect for parsing table (generally 'excel' for csv, 
-    'excel-tab' for tsv)
+        'excel-tab' for tsv)
     :type dialect: str
     :param outpath: Path to desired output location
     :type outpath: str
     :param outfields: Fields to append to table from ClassyFire output
     :type outfields: tuple(string)
-    :return: 
-    :rtype: 
+    
+    >>> tabular_query('/tabulated_data.tsv', 'structure', 'excel-tab')
+    
     """
     tax_fields = ('kingdom', 'superclass', 'class', 'subclass')
     query_ids = []
@@ -172,8 +195,9 @@ def sdf_query(inpath, outpath=None):
     :type inpath: str
     :param outpath: Path to desired output location
     :type outpath: str
-    :return: 
-    :rtype: 
+
+    >>> sdf_query('/sdf_data.sdf')
+    
     """
     from rdkit.Chem import AllChem
     query_ids = []
