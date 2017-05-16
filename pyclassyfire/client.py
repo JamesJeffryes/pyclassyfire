@@ -154,7 +154,7 @@ def tabular_query(inpath, structure_key, dialect='excel', outpath=None,
     for line in csv.DictReader(infile, dialect=dialect):
         comps.append(line[structure_key])
         if not len(comps) % chunk_size:
-            query_ids.append(structure_query('/n'.join(comps)))
+            query_ids.append(structure_query('\\n'.join(comps)))
             comps = []
     if comps:
         query_ids.append(structure_query('\\n'.join(comps)))
@@ -169,16 +169,18 @@ def tabular_query(inpath, structure_key, dialect='excel', outpath=None,
         while i < len(query_ids):
             result = json.loads(get_results(query_ids[i]))
             if result["classification_status"] == "Done":
-                for hit, line in zip(result['entities'], reader):
-                    if 'taxonomy' in outfields:
-                        hit['taxonomy'] = ";".join(
-                            ['%s:%s' % (hit[x]['name'], hit[x]['chemont_id'])
-                             for x in tax_fields if hit[x]])
-                    for field in outfields:
-                        if isinstance(hit[field], list):
-                            line[field] = ';'.join(hit[field])
-                        else:
-                            line[field] = hit[field]
+                for j, line in enumerate(reader):
+                    if result['entities'] and str(j+1) == result['entities'][0]['identifier'].split('-')[1]:
+                        hit = result['entities'].pop(0)
+                        if 'taxonomy' in outfields:
+                            hit['taxonomy'] = ";".join(
+                                ['%s:%s' % (hit[x]['name'], hit[x]['chemont_id'])
+                                 for x in tax_fields if hit[x]])
+                        for field in outfields:
+                            if isinstance(hit[field], list):
+                                line[field] = ';'.join(hit[field])
+                            else:
+                                line[field] = hit[field]
                     writer.writerow(line)
                 i += 1
             else:
@@ -227,7 +229,7 @@ def sdf_query(inpath, outpath=None):
 
 def _prevent_overwrite(write_path, suffix='_annotated'):
     """Prevents overwrite of existing output files by appending a suffix when
-     needed
+    needed
 
     :param write_path: potential write path
     :type write_path: string
