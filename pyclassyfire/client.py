@@ -1,11 +1,13 @@
 """A client for the ClassyFire API which enables efficient querying with
  chemical database files"""
 
-import requests
 import csv
-import time
-import os
+import io
 import json
+import os
+import time
+
+import requests
 
 url = "http://classyfire.wishartlab.com"
 chunk_size = 1000
@@ -216,7 +218,7 @@ def sdf_query(inpath, outpath=None):
         query_ids.append(structure_query('\\n'.join(comps)))
     print('%s queries submitted to ClassyFire API' % len(query_ids))
     i = 0
-    with open(outpath, 'w') as outfile:
+    with io.open(outpath, 'w', encoding="utf-8") as outfile:
         while i < len(query_ids):
             result = json.loads(get_results(query_ids[i]))
             if result["classification_status"] == "Done":
